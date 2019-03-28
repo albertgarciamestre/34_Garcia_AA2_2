@@ -2,7 +2,16 @@
 #include <stdio.h>
 #include <time.h>
 #include <conio.h>
-
+char showMessage(const HANDLE &console, const int &width, const int &height, const std::string &message, int color, bool askForConfirmation = false) {
+	SetConsoleCursorPosition(console, { (short)(width / 2 - message.length() / 2 + 1), (short)(height / 2 + 1) });
+	SetConsoleTextAttribute(console, color);
+	std::cout << message;
+	char confirm = ' ';
+	while (askForConfirmation && (confirm != 's') && (confirm != 'n')) {
+		confirm = _getch();
+	}
+	return confirm;
+}
 void showCursor(const HANDLE &console, bool show) {
 	// Amaguem el cursor de la consola
 	CONSOLE_CURSOR_INFO cursor;
@@ -28,9 +37,42 @@ int main(int, char *[])
 
 		Sleep(10);	// value in miliseconds for the movement
 		board.printMap();
+		if (board.youWin()) {
+			showMessage(console, numColumns, numRows, "*-*-*-->YOU WIN!!!<--*-*-*", 14);
+			//showMessage(console, numColumns, numRows + 2, "Score: " + std::to_string(map.getScore()), 9);
+			if ((showMessage(console, numColumns, numRows + 4, "Vols tornar a jugar? (s/n)", 15, true) == 's')) {
+				start = false;
+				board.InitializeMap();
+				continue;
+			}
+			else
+				break;
+		}
 
+		if (GetAsyncKeyState('P') && start) {
+			pause = !pause;
+		}
+		if (pause) {
+			board.printMap();
+			Sleep(300);
+			showMessage(console, numColumns, numRows, "P A U S E", 15);
+			Sleep(300);
+			continue;
+		}
 
+		if (GetAsyncKeyState(VK_LEFT) || GetAsyncKeyState('A'))
+			board.makeMove(Movement::LEFT);
+		else if (GetAsyncKeyState(VK_RIGHT) || GetAsyncKeyState('D'))
+			board.makeMove(Movement::RIGHT);
+		else  if (GetAsyncKeyState(VK_SPACE))
+			start = true;
+		else  if (GetAsyncKeyState(VK_ESCAPE))
+			if (showMessage(console, numColumns, numRows, "Segur que vols sortir? (s/n)", 15, true) == 's') break;
+
+		
 	}
+
+	
 	showCursor(console, true);
 
 	system("CLS");

@@ -1,5 +1,11 @@
 #include "Map.h"
 #include <sstream>
+#include <fstream>
+#include <string>
+#include <Windows.h>
+#include <iostream>
+#include <queue>
+#include <time.h>
 
 
 Map::Map() {
@@ -44,8 +50,31 @@ Map::Map() {
 		fileConfig.close();
 
 	}
+	linePlayer = 5;
 
 }
+void Map::InitializeMap()
+{
+	int i;
+
+
+	player = Player(numColumns / 2);
+
+	
+
+	// Inicialitzem la cua de punts
+	while (points.size() > 0) points.pop();		// Per a debuggar
+	srand(time(NULL));
+	for (int i = 0; i < numColumns; i++) {
+		points.push((rand() % 5));
+	}
+
+	// Inicialitzem la puntuació a zero
+	score = 0;
+	setPlayer();
+
+}
+
 
 
 void Map::printMap() {
@@ -72,7 +101,35 @@ void Map::printMap() {
 	std::cout << std::endl;
 	
 }
+void Map::makeMove(int move) {
+	// Esborrem "estela"
+	if (move == Movement::RIGHT) {
+		if (player.getPositionX() == 0) map[linePlayer][numColumns - 1] = ' ';
+		else map[linePlayer][player.getPositionX() - 1] = ' ';
+	}
+	else if (move == Movement::LEFT) {
+		if (player.getPositionX() == numColumns - 1) map[linePlayer][0] = ' ';
+		else map[linePlayer][player.getPositionX() + 1] = ' ';
+	}
+	if (move == Movement::UP) {
+		if (player.getPositionX() == 0) map[linePlayer][numColumns - 1] = ' ';
+		else map[linePlayer][player.getPositionY()] = ' ';
+	}
+	else if (move == Movement::DOWN) {
+		if (player.getPositionX() == numRows-1) map[linePlayer][0] = ' ';
+		else map[linePlayer][player.getPositionY() + 1] = ' ';
+	}
 
+
+
+	//player.setPositionX((player.getPositionX() + move) % numColumns);
+	setPlayer();
+}
+void Map::setPlayer() {
+	
+
+	map[linePlayer][player.getPositionX()] = '<';
+}
 
 
 
@@ -82,4 +139,11 @@ int Map::getNumRows() {
 
 int Map::getNumColumns() {
 	return numColumns;
+}
+/*int Map::getScore() {
+	return score;
+}*/
+
+bool Map::youWin() {
+	return (points.empty());
 }

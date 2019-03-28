@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <iostream>
 #include <time.h>
+#include <queue>
 
 const int NUM_ROWS{ 20 };
 const int NUM_COLUMNS{ 20 };
@@ -17,10 +18,10 @@ class Map {
 	char **map;
 	int numRows;
 	int numColumns;
-	//std::queue<int> Points;
+	std::queue<int> points;
 	int score;
-
-
+	int linePlayer;	// line where the player goes
+	Player player;
 
 public:
 
@@ -34,8 +35,12 @@ public:
 
 	int getNumRows();
 
-	
+	void makeMove(int move);
 
-private:
+	bool youWin();
+
+	void setPlayer();
 	
+	void getScore();
+
 };
