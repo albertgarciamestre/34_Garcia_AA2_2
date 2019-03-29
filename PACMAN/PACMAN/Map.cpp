@@ -50,7 +50,7 @@ Map::Map() {
 		fileConfig.close();
 
 	}
-	linePlayer = 5;
+	linePlayer = 14;
 
 }
 void Map::InitializeMap()
@@ -58,7 +58,7 @@ void Map::InitializeMap()
 	int i;
 
 
-	player = Player(numColumns / 2);
+	player = Player(9);
 
 	
 
@@ -103,11 +103,19 @@ void Map::printMap() {
 }
 void Map::makeMove(int move) {
 	// Esborrem "estela"
+
+	
 	if (move == Movement::RIGHT) {
-		if (player.getPositionX() == 0) map[linePlayer][numColumns - 1] = ' ';
-		else map[linePlayer][player.getPositionX() - 1] = ' ';
+		if ((player.getPositionX() + 1) == ('X'));
+		else {
+			map[linePlayer][player.getPositionX() - 1] = ' ';
+			player.setPositionX(linePlayer, (player.getPositionX() + 1));
+			setPlayer();
+		}
+		
+		
 	}
-	else if (move == Movement::LEFT) {
+	/*else if (move == Movement::LEFT) {
 		if (player.getPositionX() == numColumns - 1) map[linePlayer][0] = ' ';
 		else map[linePlayer][player.getPositionX() + 1] = ' ';
 	}
@@ -117,21 +125,23 @@ void Map::makeMove(int move) {
 	}
 	else if (move == Movement::DOWN) {
 		if (player.getPositionX() == numRows-1) map[linePlayer][0] = ' ';
-		else map[linePlayer][player.getPositionY() + 1] = ' ';
+		else map[linePlayer][player.getPositionY() + 1] = ' ';*/
+
+
 	}
 
 
 
 	//player.setPositionX((player.getPositionX() + move) % numColumns);
-	setPlayer();
-}
+	//setPlayer();
+
 void Map::setPlayer() {
 	
 
 	map[linePlayer][player.getPositionX()] = '<';
 }
 
-
+//GetAsyncKeyState(VirtualKey)
 
 int Map::getNumRows() {
 	return numRows;
