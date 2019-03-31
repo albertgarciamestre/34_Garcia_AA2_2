@@ -50,33 +50,15 @@ Map::Map() {
 		fileConfig.close();
 
 	}
-	linePlayer = numRows-5;
-	setPlayer();
-
-}
-void Map::InitializeMap()
-{
-	int i;
-
-
-	player = Player(numColumns / 2);
-
+	linePlayer = 16;
+	player = Player(16,14);
 	
 
-	// Inicialitzem la cua de punts
-	while (points.size() > 0) points.pop();		// Per a debuggar
-	srand(time(NULL));
-	for (int i = 0; i < numColumns; i++) {
-		points.push((rand() % 5));
-	}
-
-	// Inicialitzem la puntuació a zero
-	score = 0;
+	//  initialize the score to zero
+	player.setScore(0);
 	setPlayer();
 
 }
-
-
 
 void Map::printMap() {
 	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -85,7 +67,7 @@ void Map::printMap() {
 	SetConsoleCursorPosition(console, { 0,0 });
 
 	SetConsoleTextAttribute(console, 11);	
-	std::cout << "Score--> " << score << "     " << std::endl;
+	std::cout << "Score--> " << player.getScore() << "     " << std::endl;
 
 	for (int i = 0; i < numRows+1 ; i++) {
 		for (int j = 0; j < numColumns ; j++) {
@@ -103,51 +85,85 @@ void Map::printMap() {
 	
 }
 void Map::makeMove(int move) {
-	// Esborrem "estela"
-	/*if (move == Movement::RIGHT) {
-		if (player.getPositionX() == 0) map[linePlayer][numColumns - 1] = ' ';
-		else map[linePlayer][player.getPositionX() - 1] = ' ';
+	// clean
+	if (move == MovementX::RIGHT) {
+		map[player.getPositionY()][player.getPositionX()] = ' ';
 	}
-	else if (move == Movement::LEFT) {
-		if (player.getPositionX() == numColumns - 1) map[linePlayer][0] = ' ';
-		else map[linePlayer][player.getPositionX() + 1] = ' ';
+	else if (move == MovementX::LEFT) {
+		 map[player.getPositionY()][player.getPositionX()] = ' ';
 	}
-	if (move == Movement::UP) {
-		if (player.getPositionX() == 0) map[linePlayer][numColumns - 1] = ' ';
-		else map[linePlayer][player.getPositionY()] = ' ';
+	else if (move == MovementY::UP) {
+		map[player.getPositionY()][player.getPositionX()] = ' ';
 	}
-	else if (move == Movement::DOWN) {
-		if (player.getPositionX() == numRows-1) map[linePlayer][0] = ' ';
-		else map[linePlayer][player.getPositionY() + 1] = ' ';
-	}*/
-	if (move == Movement::RIGHT) {
-		if (player.getPositionX() == 0) map[linePlayer][numColumns - 1] = ' ';
-		else map[linePlayer][player.getPositionX() - 1] = ' ';
+	else if (move == MovementY::DOWN) {
+		map[player.getPositionY()][player.getPositionX()] = ' ';
+	}
+
+	// movement player
+	if (move == MovementY::DOWN) {
+		if (map[player.getPositionY() + 1][player.getPositionX() - 1] == 'X')
+		{
+			player.setPositionY(player.getPositionY()); player.setPositionX(player.getPositionX()); 
+		}
+		else {
+			if (map[player.getPositionY()+1][player.getPositionX() - 1] == '*') {
+				player.scorePoints();
+			}
+			player.setPositionY(player.getPositionY() + 1); player.setPositionX(player.getPositionX() - 1); 
+		}
+	} else if (move == MovementY::UP){
+		if (map[player.getPositionY() - 1][player.getPositionX() + 1] == 'X')
+		{
+			player.setPositionY(player.getPositionY()); player.setPositionX(player.getPositionX());
+		}
+		else {
+			if (map[player.getPositionY()-1][player.getPositionX() + 1] == '*') {
+				player.scorePoints();
+			}
+			player.setPositionY(player.getPositionY() - 1); player.setPositionX(player.getPositionX() + 1); 
+		}
+		
+	} else if (move == MovementX::LEFT) {
+		if (map[player.getPositionY()][player.getPositionX() - 1] == 'X')
+		{
+			player.setPositionY(player.getPositionY()); player.setPositionX(player.getPositionX());
+		}
+		else {
+			if (map[player.getPositionY()][player.getPositionX() - 1] == '*'){
+				player.scorePoints();	
+			}
+			player.setPositionY(player.getPositionY()); player.setPositionX(player.getPositionX() - 1); 
+		}
 		
 	}
-	else if (move == Movement::LEFT) {
-		if (player.getPositionX() == numColumns - 1) map[linePlayer][0] = ' ';
-		else  map[linePlayer][player.getPositionX() + 1] = ' ';
+	else if (move == MovementX::RIGHT) {
+		if (map[player.getPositionY()][player.getPositionX() + 1] == 'X')
+		{
+			player.setPositionY(player.getPositionY()); player.setPositionX(player.getPositionX());
+		}
+		else {
+			if (map[player.getPositionY()][player.getPositionX() + 1] == '*'){
+				player.scorePoints();
+			}
+			player.setPositionY(player.getPositionY()); player.setPositionX(player.getPositionX() + 1); 
+		}
+		
 	}
-	/*if (move == Movement::UP) {
-		map[linePlayer][player.getPositionY() - 1] = ' ';
-	}
-	else if (move == Movement::DOWN) {
-	
-	 map[linePlayer][player.getPositionY() + 1] = ' ';
-	}*/
-	player.setPosition(player.getPositionX() + move, player.getPositionY());
 
-
-	//player.setPositionX((player.getPositionX() + move) % numColumns);
 	setPlayer();
+	
 }
+
 void Map::setPlayer() {
 	
+	player.setPositionX(player.getPositionX());
+	player.setPositionY(player.getPositionY());
 
-	map[linePlayer][player.getPositionX()] = '<';
+
+	map[player.getPositionY()][player.getPositionX()] = '<';
+	
+
 }
-
 
 
 int Map::getNumRows() {
@@ -157,10 +173,6 @@ int Map::getNumRows() {
 int Map::getNumColumns() {
 	return numColumns;
 }
-/*int Map::getScore() {
-	return score;
-}*/
 
-bool Map::youWin() {
-	return (points.empty());
-}
+
+

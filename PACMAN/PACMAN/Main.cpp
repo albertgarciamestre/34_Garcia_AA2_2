@@ -37,7 +37,7 @@ int main(int, char *[])
 
 		Sleep(10);	// value in miliseconds for the movement
 		board.printMap();
-		board.InitializeMap();
+
 		/*if (board.youWin()) {
 			showMessage(console, numColumns, numRows, "*-*-*-->YOU WIN!!!<--*-*-*", 14);
 			//showMessage(console, numColumns, numRows + 2, "Score: " + std::to_string(map.getScore()), 9);
@@ -63,21 +63,18 @@ int main(int, char *[])
 		}
 
 		if (GetAsyncKeyState(VK_LEFT) || GetAsyncKeyState('A'))
-			board.makeMove(Movement::LEFT);
+			board.makeMove(MovementX::LEFT);
 		else if (GetAsyncKeyState(VK_RIGHT) || GetAsyncKeyState('D'))
-			board.makeMove(Movement::RIGHT);
+			board.makeMove(MovementX::RIGHT);
 		else if (GetAsyncKeyState(VK_UP) || GetAsyncKeyState('W'))
-			board.makeMove(Movement::UP);
+			board.makeMove(MovementY::UP);
 		else if (GetAsyncKeyState(VK_DOWN) || GetAsyncKeyState('S'))
-			board.makeMove(Movement::DOWN);
+			board.makeMove(MovementY::DOWN);
 		else  if (GetAsyncKeyState(VK_SPACE))
 			start = true;
 		else  if (GetAsyncKeyState(VK_ESCAPE))
 			if (showMessage(console, numColumns, numRows, "Segur que vols sortir? (s/n)", 15, true) == 's') break;
-
-		
 	}
-
 	
 	showCursor(console, true);
 

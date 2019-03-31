@@ -10,7 +10,8 @@ const int NUM_ROWS{ 20 };
 const int NUM_COLUMNS{ 20 };
 
 
-enum Movement { LEFT = -1, RIGHT = 1,UP= -1,DOWN=-1 };
+enum MovementX { LEFT , RIGHT  };
+enum MovementY { UP=2 , DOWN  };
 
 
 class Map {
@@ -18,16 +19,14 @@ class Map {
 	char **map;
 	int numRows;
 	int numColumns;
-	std::queue<int> points;
-	int score;
 	int linePlayer;	// line where the player goes
 	Player player;
+	
 
 public:
 
 	Map();
-	
-	void InitializeMap();
+
 
 	void printMap();
 
@@ -37,10 +36,11 @@ public:
 
 	void makeMove(int move);
 
+
 	bool youWin();
 
 	void setPlayer();
 	
-	void getScore();
+
 
 };
