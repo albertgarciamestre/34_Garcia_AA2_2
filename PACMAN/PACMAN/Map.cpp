@@ -50,7 +50,8 @@ Map::Map() {
 		fileConfig.close();
 
 	}
-	linePlayer = 5;
+	linePlayer = numRows-5;
+	setPlayer();
 
 }
 void Map::InitializeMap()
@@ -103,7 +104,7 @@ void Map::printMap() {
 }
 void Map::makeMove(int move) {
 	// Esborrem "estela"
-	if (move == Movement::RIGHT) {
+	/*if (move == Movement::RIGHT) {
 		if (player.getPositionX() == 0) map[linePlayer][numColumns - 1] = ' ';
 		else map[linePlayer][player.getPositionX() - 1] = ' ';
 	}
@@ -118,8 +119,24 @@ void Map::makeMove(int move) {
 	else if (move == Movement::DOWN) {
 		if (player.getPositionX() == numRows-1) map[linePlayer][0] = ' ';
 		else map[linePlayer][player.getPositionY() + 1] = ' ';
+	}*/
+	if (move == Movement::RIGHT) {
+		if (player.getPositionX() == 0) map[linePlayer][numColumns - 1] = ' ';
+		else map[linePlayer][player.getPositionX() - 1] = ' ';
+		
 	}
-
+	else if (move == Movement::LEFT) {
+		if (player.getPositionX() == numColumns - 1) map[linePlayer][0] = ' ';
+		else  map[linePlayer][player.getPositionX() + 1] = ' ';
+	}
+	/*if (move == Movement::UP) {
+		map[linePlayer][player.getPositionY() - 1] = ' ';
+	}
+	else if (move == Movement::DOWN) {
+	
+	 map[linePlayer][player.getPositionY() + 1] = ' ';
+	}*/
+	player.setPosition(player.getPositionX() + move, player.getPositionY());
 
 
 	//player.setPositionX((player.getPositionX() + move) % numColumns);

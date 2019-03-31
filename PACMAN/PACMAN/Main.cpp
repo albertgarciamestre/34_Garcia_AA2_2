@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <conio.h>
-char showMessage(const HANDLE &console, const int &width, const int &height, const std::string &message, int color, bool askForConfirmation = false) {
+char showMessage(const HANDLE &console, const int &width, const int &height, const std::string &message, int color, bool askForConfirmation = true) {
 	SetConsoleCursorPosition(console, { (short)(width / 2 - message.length() / 2 + 1), (short)(height / 2 + 1) });
 	SetConsoleTextAttribute(console, color);
 	std::cout << message;
@@ -22,7 +22,7 @@ void showCursor(const HANDLE &console, bool show) {
 
 int main(int, char *[])
 {
-	bool start = false;
+	bool start = true;
 	bool pause = false;
 
 	Map board = Map();
@@ -37,18 +37,20 @@ int main(int, char *[])
 
 		Sleep(10);	// value in miliseconds for the movement
 		board.printMap();
-		if (board.youWin()) {
+		board.InitializeMap();
+		/*if (board.youWin()) {
 			showMessage(console, numColumns, numRows, "*-*-*-->YOU WIN!!!<--*-*-*", 14);
 			//showMessage(console, numColumns, numRows + 2, "Score: " + std::to_string(map.getScore()), 9);
-			if ((showMessage(console, numColumns, numRows + 4, "Vols tornar a jugar? (s/n)", 15, true) == 's')) {
-				start = false;
+			if ((showMessage(console, numColumns, numRows + 4, "Vols tornar a jugar? (s/n)", 15, false) == 's')) {
+				start = true;
 				board.InitializeMap();
 				continue;
 			}
 			else
 				break;
 		}
-
+			
+		}*/
 		if (GetAsyncKeyState('P') && start) {
 			pause = !pause;
 		}
@@ -64,6 +66,10 @@ int main(int, char *[])
 			board.makeMove(Movement::LEFT);
 		else if (GetAsyncKeyState(VK_RIGHT) || GetAsyncKeyState('D'))
 			board.makeMove(Movement::RIGHT);
+		else if (GetAsyncKeyState(VK_UP) || GetAsyncKeyState('W'))
+			board.makeMove(Movement::UP);
+		else if (GetAsyncKeyState(VK_DOWN) || GetAsyncKeyState('S'))
+			board.makeMove(Movement::DOWN);
 		else  if (GetAsyncKeyState(VK_SPACE))
 			start = true;
 		else  if (GetAsyncKeyState(VK_ESCAPE))

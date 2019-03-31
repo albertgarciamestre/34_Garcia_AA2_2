@@ -9,6 +9,6 @@ public:
 
 	int getPositionX();
 	int getPositionY();
-	void setPositionX(int _position_x, int _position_y);
+	void setPosition(int _position_x, int _position_y);
 
 };
