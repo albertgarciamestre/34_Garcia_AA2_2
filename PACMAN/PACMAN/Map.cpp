@@ -9,122 +9,201 @@
 
 
 Map::Map() {
-	// initialize attributes
-	std::ifstream fileConfig("config.txt");
-
-	if (fileConfig.is_open()) {
-
-		std::string firstLine;
-		fileConfig >> firstLine;
-		size_t prev = 0, pos = 0;
-		pos = firstLine.find(";", prev);
-		numColumns = atoi((firstLine.substr(0, pos - prev)).c_str());
-		prev = pos + 1;
-		pos = firstLine.find(";", prev);
-		numRows = atoi((firstLine.substr(prev, pos - prev)).c_str());
-
-		//map
-		std::string secondLine;
-		std::string tablero;
-		std::stringstream str;
-		str << fileConfig.rdbuf();
-		tablero = str.str();
-
-		map = new char*[numRows + 1];
-		for (int i = 0; i < numRows + 1; i++) {
-			map[i] = new char[numColumns + 1];
-		}
-
-		int x{ 0 };
-		int y{ 0 };
-
-		for (auto& c : tablero)
-		{
-			map[x][y] = c;
-			y++;
-			if (y == numColumns) {
-				y = 0;
-				x++;
-			}
-		}
-		fileConfig.close();
-
-	}
-	linePlayer = 16;
-	player = Player(16,14);
-	
-
+	fileRead();
+	player = Player(9,11);
 	//  initialize the score to zero
 	player.setScore(0);
-	setPlayer();
+	
 
 }
+void Map::playerInit() {
+	
+}
 
-void Map::printMap() {
+void Map::fileRead()
+{
+	std::ifstream inFile;
+
+	char coma1;
+
+	inFile.open("Config.txt");
+	if (!inFile)
+	{
+		std::cout << "unable to open file C.txt for reading" << std::endl;    
+	}
+
+	inFile >> NumColumns >> coma1 >> NumRows >> coma1;                       
+	map = new char*[NumColumns];
+	for (int i = 0; i < NumColumns; i++)
+	{
+		map[i] = new char[NumRows];
+	}
+
+	std::string dump;
+	std::getline(inFile, dump, '\n');
+	for (int i = 0; i < NumColumns; ++i)
+	{
+		inFile.std::istream::getline(map[i], NumColumns, '\n');
+	}
+#pragma endregion
+
+	inFile.close();
+}
+void Map::setPlayer() {
+	//player = Player(playerInitY, playerInitX);
+
+	player.setPositionX(player.getPositionX());
+	player.setPositionY(player.getPositionY());
+
+	map[player.getPositionY()][player.getPositionX()] = '>';
+
+}
+void Map::print()
+{
+
 	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	// reposition the cursor at the start of the console to repaint without erasing (avoiding flickering or flashing)
 	SetConsoleCursorPosition(console, { 0,0 });
 
-	SetConsoleTextAttribute(console, 11);	
-	std::cout << "Score--> " << player.getScore() << "     " << std::endl;
 
-	for (int i = 0; i < numRows+1 ; i++) {
-		for (int j = 0; j < numColumns ; j++) {
-					if (map[i][j] == 'X')
-						SetConsoleTextAttribute(console, 16);
-					else if (map[i][j] == '*')
-						SetConsoleTextAttribute(console, 15);
-					else if (map[i][j] == ' ')
-						SetConsoleTextAttribute(console, 1);
-					std::cout << map[i][j];
-		}
+
+	for (int i = 0; i < NumColumns; i++)
+	{
+		std::cout << std::endl;
+		for (int j = 0; j < NumRows; j++)
+		{
+			switch (map[i][j])
+			{
+			case ' ':
+				SetConsoleTextAttribute(console, 1);
+				std::cout << ' ';
+				break;
+			case '&':
+				SetConsoleTextAttribute(console, 3);
+				std::cout << '&';
+				break;
+			case '#':
+				SetConsoleTextAttribute(console, 5);
+				std::cout << '#';
+				break;
+			case '$':
+				SetConsoleTextAttribute(console, 8);
+				std::cout << '$';
+				break;
+			case 'X':
+				SetConsoleTextAttribute(console, 1);
+				std::cout << char(219);
+				break;
+			case '*':
+				dots++;
+				SetConsoleTextAttribute(console, 15);
+				std::cout << '*' ;
+				break;
+			case '>':
+				SetConsoleTextAttribute(console, 10);
 		
+				std::cout << '>';
+				break;
+			default: SetConsoleTextAttribute(console, 1); break;
+			}
+		}
 	}
+	SetConsoleTextAttribute(console, 1);
 	std::cout << std::endl;
+	SetConsoleTextAttribute(console, 11);
+	std::cout << "Score: " << player.getScore()<<std::endl; 
+	std::cout << std::endl;
+	player.getLives();
 	
 }
+
+void Map::countDots()
+{
+	for (int i = 0; i < NumColumns; i++)
+	{
+		for (int j = 0; j < NumRows; j++)
+		{
+			if (map[i][j] == '*')
+			{
+				//player.setScore(score++);
+			}
+		}
+	}
+}
+
+/*void Map::updatePlayerPos(int x, int y, Inputs mov)
+{
+	map[x][y] = '>';
+	if (y <= 0)
+	{
+		map[x][NumRows - 1] = ' ';
+	}
+	if (y >= NumRows)
+	{
+		map[x][0] = ' ';
+	}
+
+	switch (mov)
+	{
+	case LEFT:
+		map[x][y + 1] = ' ';
+		break;
+	case RIGHT:
+		map[x][y - 1] = ' ';
+		break;
+	case UP:
+		map[x + 1][y] = ' ';
+		break;
+	case DOWN:
+		map[x - 1][y] = ' ';
+		break;
+	}
+}*/
 void Map::makeMove(int move) {
 	// clean
-	if (move == MovementX::RIGHT) {
+	if (move == Inputs::RIGHT) {
 		map[player.getPositionY()][player.getPositionX()] = ' ';
 	}
-	else if (move == MovementX::LEFT) {
+	else if (move == Inputs::LEFT) {
 		 map[player.getPositionY()][player.getPositionX()] = ' ';
 	}
-	else if (move == MovementY::UP) {
+	else if (move == Inputs::UP) {
 		map[player.getPositionY()][player.getPositionX()] = ' ';
 	}
-	else if (move == MovementY::DOWN) {
+	else if (move == Inputs::DOWN) {
 		map[player.getPositionY()][player.getPositionX()] = ' ';
 	}
 
 	// movement player
-	if (move == MovementY::DOWN) {
-		if (map[player.getPositionY() + 1][player.getPositionX() - 1] == 'X')
+	if (move == Inputs::DOWN) {
+		if (map[player.getPositionY() + 1][player.getPositionX()] == 'X')
 		{
 			player.setPositionY(player.getPositionY()); player.setPositionX(player.getPositionX()); 
+			//std::cout << player.getPositionX();
 		}
 		else {
-			if (map[player.getPositionY()+1][player.getPositionX() - 1] == '*') {
+			if (map[player.getPositionY() + 1][player.getPositionX()] == '*') {
 				player.scorePoints();
 			}
-			player.setPositionY(player.getPositionY() + 1); player.setPositionX(player.getPositionX() - 1); 
+			player.setPositionY(player.getPositionY() + 1); player.setPositionX(player.getPositionX()); 
+			//std::cout << player.getPositionX() << " " << player.getPositionY();
 		}
-	} else if (move == MovementY::UP){
-		if (map[player.getPositionY() - 1][player.getPositionX() + 1] == 'X')
+	} else if (move == Inputs::UP){
+		if (map[player.getPositionY() - 1 ][player.getPositionX()] == 'X')
 		{
 			player.setPositionY(player.getPositionY()); player.setPositionX(player.getPositionX());
 		}
 		else {
-			if (map[player.getPositionY()-1][player.getPositionX() + 1] == '*') {
+			if (map[player.getPositionY() - 1][player.getPositionX()] == '*') {
 				player.scorePoints();
 			}
-			player.setPositionY(player.getPositionY() - 1); player.setPositionX(player.getPositionX() + 1); 
+			player.setPositionY(player.getPositionY() - 1); player.setPositionX(player.getPositionX() ); 
+			//std::cout << player.getPositionX() << " " << player.getPositionY();
 		}
 		
-	} else if (move == MovementX::LEFT) {
-		if (map[player.getPositionY()][player.getPositionX() - 1] == 'X')
+	} else if (move == Inputs::LEFT) {
+		if (map[player.getPositionY()][player.getPositionX()-1 ] == 'X')
 		{
 			player.setPositionY(player.getPositionY()); player.setPositionX(player.getPositionX());
 		}
@@ -133,19 +212,21 @@ void Map::makeMove(int move) {
 				player.scorePoints();	
 			}
 			player.setPositionY(player.getPositionY()); player.setPositionX(player.getPositionX() - 1); 
+			//std::cout << player.getPositionX() <<" "<<  player.getPositionY();
 		}
 		
 	}
-	else if (move == MovementX::RIGHT) {
-		if (map[player.getPositionY()][player.getPositionX() + 1] == 'X')
+	else if (move == Inputs::RIGHT) {
+		if (map[player.getPositionY()][player.getPositionX()+1] == 'X')
 		{
 			player.setPositionY(player.getPositionY()); player.setPositionX(player.getPositionX());
 		}
 		else {
-			if (map[player.getPositionY()][player.getPositionX() + 1] == '*'){
+			if (map[player.getPositionY()][player.getPositionX()+1] == '*'){
 				player.scorePoints();
 			}
 			player.setPositionY(player.getPositionY()); player.setPositionX(player.getPositionX() + 1); 
+			//std::cout << player.getPositionX() << " " << player.getPositionY();
 		}
 		
 	}
@@ -154,24 +235,14 @@ void Map::makeMove(int move) {
 	
 }
 
-void Map::setPlayer() {
-	
-	player.setPositionX(player.getPositionX());
-	player.setPositionY(player.getPositionY());
-
-
-	map[player.getPositionY()][player.getPositionX()] = '<';
-	
-
-}
 
 
 int Map::getNumRows() {
-	return numRows;
+	return NumRows;
 }
 
 int Map::getNumColumns() {
-	return numColumns;
+	return NumColumns;
 }
 
 

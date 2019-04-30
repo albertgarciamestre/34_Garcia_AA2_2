@@ -1,7 +1,11 @@
 #include "Map.h"
+#include "Types.h"
 #include <stdio.h>
 #include <time.h>
 #include <conio.h>
+
+bool Keyboard[8]{ 0 };
+
 char showMessage(const HANDLE &console, const int &width, const int &height, const std::string &message, int color, bool askForConfirmation = true) {
 	SetConsoleCursorPosition(console, { (short)(width / 2 - message.length() / 2 + 1), (short)(height / 2 + 1) });
 	SetConsoleTextAttribute(console, color);
@@ -19,10 +23,20 @@ void showCursor(const HANDLE &console, bool show) {
 	cursor.dwSize = 25;
 	SetConsoleCursorInfo(console, &cursor);
 }
+void getInput() {
+	Keyboard[(int)InputKey::ESC] = GetAsyncKeyState(VK_ESCAPE);
+	Keyboard[(int)InputKey::UP] = GetAsyncKeyState(VK_UP);
+	Keyboard[(int)InputKey::DOWN] = GetAsyncKeyState(VK_DOWN);
+	Keyboard[(int)InputKey::RIGHT] = GetAsyncKeyState(VK_RIGHT);
+	Keyboard[(int)InputKey::LEFT] = GetAsyncKeyState(VK_LEFT);
+	Keyboard[(int)InputKey::SPACE] = GetAsyncKeyState(VK_SPACE);
+	Keyboard[(int)InputKey::PAUSE] = GetAsyncKeyState('p');
+}
 
 int main(int, char *[])
 {
-	bool start = true;
+	
+	bool start = false;
 	bool pause = false;
 
 	Map board = Map();
@@ -32,48 +46,49 @@ int main(int, char *[])
 	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 	showCursor(console, false);
 
+	std::cout << "*-*-*Init*-*-*"<<std::endl;
+	std::cout << "Press space to start the game." << std::endl;
+
+	
 	while (1)
 	{
-
-		Sleep(10);	// value in miliseconds for the movement
-		board.printMap();
-
-		/*if (board.youWin()) {
-			showMessage(console, numColumns, numRows, "*-*-*-->YOU WIN!!!<--*-*-*", 14);
-			//showMessage(console, numColumns, numRows + 2, "Score: " + std::to_string(map.getScore()), 9);
-			if ((showMessage(console, numColumns, numRows + 4, "Vols tornar a jugar? (s/n)", 15, false) == 's')) {
-				start = true;
-				board.InitializeMap();
-				continue;
-			}
-			else
-				break;
-		}
-			
-		}*/
-		if (GetAsyncKeyState('P') && start) {
-			pause = !pause;
-		}
-		if (pause) {
-			board.printMap();
-			Sleep(300);
-			showMessage(console, numColumns, numRows, "P A U S E", 15);
-			Sleep(300);
-			continue;
-		}
-
-		if (GetAsyncKeyState(VK_LEFT) || GetAsyncKeyState('A'))
-			board.makeMove(MovementX::LEFT);
-		else if (GetAsyncKeyState(VK_RIGHT) || GetAsyncKeyState('D'))
-			board.makeMove(MovementX::RIGHT);
-		else if (GetAsyncKeyState(VK_UP) || GetAsyncKeyState('W'))
-			board.makeMove(MovementY::UP);
-		else if (GetAsyncKeyState(VK_DOWN) || GetAsyncKeyState('S'))
-			board.makeMove(MovementY::DOWN);
-		else  if (GetAsyncKeyState(VK_SPACE))
+		
+		//INPUT
+		getInput();
+		if (Keyboard[(int)InputKey::LEFT])
+			board.makeMove(Inputs::LEFT);
+		else if (Keyboard[(int)InputKey::RIGHT])
+			board.makeMove(Inputs::RIGHT);
+		else if (Keyboard[(int)InputKey::DOWN])
+			board.makeMove(Inputs::DOWN);
+		else if (Keyboard[(int)InputKey::UP])
+			board.makeMove(Inputs::UP);
+		else if (Keyboard[(int)InputKey::SPACE])
 			start = true;
-		else  if (GetAsyncKeyState(VK_ESCAPE))
-			if (showMessage(console, numColumns, numRows, "Segur que vols sortir? (s/n)", 15, true) == 's') break;
+		else if (Keyboard[(int)InputKey::PAUSE])
+			pause = true;
+		else if (Keyboard[(int)InputKey::ESC])
+			break;
+		
+		//UPDATE
+		if (start) {
+			
+			
+			if (pause) {
+				board.print();
+				Sleep(300);
+				std::cout<<"P A U S E";
+				Sleep(300);
+				
+			}
+			//DRAW
+			board.print();
+
+			//FPS
+			Sleep(10);	// value in miliseconds for the movement
+		}
+
+		
 	}
 	
 	showCursor(console, true);
